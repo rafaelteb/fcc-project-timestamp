@@ -25,7 +25,7 @@ const ERROR_MESSAGE = { error: "Invalid Date" };
 function getUnixTime(date){
   let unixDate;
   try {
-    let dateObj = new Date(dateObj);
+    let dateObj = new Date(date);
     unixDate = Math.floor(dateObj.getTime() / 1000);
   } catch (error) {
     unixDate = false;
@@ -51,7 +51,7 @@ app.get("/api/hello", function (req, res) {
 // get data as number only (unix date)
 app.get('/api/:date(\\d+)', (req, res, next) => {
   const parsedDate = parseInt(req.params.date);
-  let unixDate = getUnixTime(par);
+  let unixDate = getUnixTime(parsedDate);
   let utcDate = getUTCDate(parsedDate);
 
   if (utcDate != false && unixDate !=false) {
@@ -68,13 +68,13 @@ app.get('/api/:date?', (req, res) => {
   if (date === undefined || date === null || date.trim() === '') {
     date = new Date();
     let unixDate = getUnixTime(date);
-    date = date.toUTCString();
-    res.json({ unix: unixDate, utc: date });
+    let utcDate = getUTCDate(date);
+    res.json({ unix: unixDate, utc: utcDate });
   }
 
   // Check if unixdate and utcdate could be created
-  let unixDate = getUnixTime(par);
-  let utcDate = getUTCDate(parsedDate);
+  let unixDate = getUnixTime(date);
+  let utcDate = getUTCDate(date);
   if (utcDate != false && unixDate !=false) {
     res.json({ unix: unixDate, utc: date });
   }
