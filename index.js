@@ -18,47 +18,71 @@ app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
+// setting variables
+const ERROR_MESSAGE = { error: "Invalid Date" };
+
+// adding utility functions here to keep things dry
+function getUnixTime(date){
+  let unixDate;
+  try {
+    let dateObj = new Date(dateObj);
+    unixDate = Math.floor(dateObj.getTime() / 1000);
+  } catch (error) {
+    unixDate = false;
+  }
+  return unixDate;
+}
+
+function getUTCDate(date){
+  let utcDate;
+  try {
+    utcDate = new Date(date).toUTCString();
+  } catch (error) {
+    utcDate = false;
+  }
+  return utcDate;
+}
 
 // your first API endpoint... 
 app.get("/api/hello", function (req, res) {
   res.json({ greeting: 'hello API' });
 });
 
+// get data as number only (unix date)
+app.get('/api/:date(\\d+)', (req, res, next) => {
+  const parsedDate = parseInt(req.params.date);
+  let unixDate = getUnixTime(par);
+  let utcDate = getUTCDate(parsedDate);
+
+  if (utcDate != false && unixDate !=false) {
+    res.json({ unix: parsedDate, utc: utcDate });
+  }
+  next();
+});
+
 // get empty data paramenter
 app.get('/api/:date?', (req, res, next) => {
   let date = req.params.date;
+  
   // Check if the date parameter is undefined, null, or an empty string
   if (date === undefined || date === null || date.trim() === '') {
     date = new Date();
-    let unixDate = Math.floor(date.getTime() / 1000);
+    let unixDate = getUnixTime(date);
     date = date.toUTCString();
     res.json({ unix: unixDate, utc: date });
   }
-  next();
-});
 
-// get data as number only
-app.get('/api/:date(\\d+)', (req, res, next) => {
-  const parsedDate = parseInt(req.params.date, 10);
-  if (isNaN(parsedDate)) {
-    res.json({ error: "Invalid Date" });
-  } else {
-    let date = new Date(parsedDate).toUTCString();
-    res.json({ unix: parsedDate, utc: date });
-  }
-  next();
-});
-
-// get data as us date-format only
-app.get('/api/:date?', (req, res) => {
-  const parsedDate = new Date(req.params.date);
-  if (isNaN(parsedDate)) {
-    res.json({ error: "Invalid Date" });
-  } else {
-    let date = parsedDate.toUTCString();
-    let unixDate = Math.floor(parsedDate.getTime() / 1000);
+  // Check if unixdate and utcdate could be created
+  let unixDate = getUnixTime(par);
+  let utcDate = getUTCDate(parsedDate);
+  if (utcDate != false && unixDate !=false) {
     res.json({ unix: unixDate, utc: date });
   }
+  // Output error
+  else {
+    res.json(ERROR_MESSAGE);
+  }
+  next();
 });
 
 // listen for requests :)
