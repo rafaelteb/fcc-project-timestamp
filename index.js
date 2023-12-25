@@ -61,7 +61,7 @@ app.get('/api/:date(\\d+)', (req, res, next) => {
 });
 
 // get empty data paramenter
-app.get('/api/:date?', (req, res, next) => {
+app.get('/api/:date?', (req, res) => {
   let date = req.params.date;
   
   // Check if the date parameter is undefined, null, or an empty string
@@ -82,7 +82,6 @@ app.get('/api/:date?', (req, res, next) => {
   else {
     res.json(ERROR_MESSAGE);
   }
-  next();
 });
 
 // listen for requests :)
