@@ -43,45 +43,34 @@ function getUTCDate(date){
   return utcDate;
 }
 
+function createResponseObject(date) {
+  const unixDate = getUnixTime(date);
+  const utcDate = getUTCDate(date);
+
+  if (utcDate !== false && unixDate !== false) {
+    return { unix: unixDate, utc: utcDate };
+  } else {
+    return ERROR_MESSAGE;
+  }
+}
+
 // your first API endpoint... 
 app.get("/api/hello", function (req, res) {
   res.json({ greeting: 'hello API' });
 });
 
 // get data as number only (unix date)
-app.get('/api/:date(\\d+)', (req, res, next) => {
+app.get('/api/:date(\\d+)', (req, res) => {
   const parsedDate = parseInt(req.params.date);
-  let unixDate = getUnixTime(parsedDate);
-  let utcDate = getUTCDate(parsedDate);
-
-  if (utcDate != false && unixDate !=false) {
-    res.json({ unix: parsedDate, utc: utcDate });
-  }
-  next();
+  const response = createResponseObject(parsedDate);
+  res.json(response);
 });
 
-// get empty data paramenter
+// get empty data parameter
 app.get('/api/:date?', (req, res) => {
-  let date = req.params.date;
-  
-  // Check if the date parameter is undefined, null, or an empty string
-  if (date === undefined || date === null || date.trim() === '') {
-    date = new Date();
-    let unixDate = getUnixTime(date);
-    let utcDate = getUTCDate(date);
-    res.json({ unix: unixDate, utc: utcDate });
-  }
-
-  // Check if unixdate and utcdate could be created
-  let unixDate = getUnixTime(date);
-  let utcDate = getUTCDate(date);
-  if (utcDate != false && unixDate !=false) {
-    res.json({ unix: unixDate, utc: date });
-  }
-  // Output error
-  else {
-    res.json(ERROR_MESSAGE);
-  }
+  const date = req.params.date || new Date();
+  const response = createResponseObject(date);
+  res.json(response);
 });
 
 // listen for requests :)
