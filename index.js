@@ -23,24 +23,21 @@ const ERROR_MESSAGE = { error: "Invalid Date" };
 
 // adding utility functions here to keep things dry
 function getUnixTime(date){
-  let unixDate;
   try {
     let dateObj = new Date(date);
-    unixDate = dateObj.getTime();
+    return isNaN(dateObj.getTime()) ? null : dateObj.getTime();
   } catch (error) {
-    unixDate = false;
+    return false;
   }
-  return unixDate;
 }
 
 function getUTCDate(date){
-  let utcDate;
   try {
-    utcDate = new Date(date).toUTCString();
+    let dateObj = new Date(date).toUTCString();
+    return isNaN(dateObj.getTime()) ? false : dateObj.toUTCString();
   } catch (error) {
-    utcDate = false;
+    return false;
   }
-  return utcDate;
 }
 
 function createResponseObject(date) {
