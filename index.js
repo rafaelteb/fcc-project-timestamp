@@ -26,7 +26,7 @@ function getUnixTime(date){
   let unixDate;
   try {
     let dateObj = new Date(date);
-    unixDate = Math.floor(dateObj.getTime() / 1000);
+    unixDate = dateObj.getTime();
   } catch (error) {
     unixDate = false;
   }
