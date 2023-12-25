@@ -24,27 +24,40 @@ app.get("/api/hello", function (req, res) {
   res.json({ greeting: 'hello API' });
 });
 
+// get empty data paramenter
+app.get('/api/:date?', (req, res, next) => {
+  let date = req.params.date;
+  // Check if the date parameter is undefined, null, or an empty string
+  if (date === undefined || date === null || date.trim() === '') {
+    date = new Date();
+    let unixDate = Math.floor(date.getTime() / 1000);
+    date = date.toUTCString();
+    res.json({ unix: unixDate, utc: date });
+  }
+  next();
+});
+
 // get data as number only
-app.get('/api/:timestamp(\\d+)', (req, res, next) => {
-  const parsedDate = parseInt(req.params.timestamp, 10);
+app.get('/api/:date(\\d+)', (req, res, next) => {
+  const parsedDate = parseInt(req.params.date, 10);
   if (isNaN(parsedDate)) {
-    res.status(400).send('Invalid timestamp');
+    res.json({ error: "Invalid Date" });
   } else {
-    let date = new Date(parsedDate).toString();
-    res.json({unix: parsedDate, utc: date});
+    let date = new Date(parsedDate).toUTCString();
+    res.json({ unix: parsedDate, utc: date });
   }
   next();
 });
 
 // get data as us date-format only
-app.get('/api/:date(\\d{4}-\\d{2}-\\d{2})', (req, res) => {
+app.get('/api/:date?', (req, res) => {
   const parsedDate = new Date(req.params.date);
   if (isNaN(parsedDate)) {
-    res.status(400).send('Invalid date format');
+    res.json({ error: "Invalid Date" });
   } else {
-    let date = parsedDate.toString();
+    let date = parsedDate.toUTCString();
     let unixDate = Math.floor(parsedDate.getTime() / 1000);
-    res.json({unix: unixDate, utc: date});
+    res.json({ unix: unixDate, utc: date });
   }
 });
 
